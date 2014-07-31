@@ -1,0 +1,202 @@
+## Load Libraries
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(scales)
+library(gridExtra)
+
+## Global Variables
+title_pre <<- "Daily Count of \""
+title_pre_normalized <<- "Normalized Count of \""
+title_mid_pre <<- "\", \""
+title_mid <<- "\" and \""
+title_post <<- "\" Mentions on Twitter"
+
+#####################     FUNCTIONS     ################################# 
+
+## Read in new data from CSV
+new_data <- function(company) {
+  
+  ## Source of Company's Data
+  root = "./"
+  type = ".csv"
+  link = paste(root,company, type, sep="")  
+  
+  ## Read in the file
+  data <- read.csv(link, header=FALSE, as.is=TRUE)
+  
+  ## Title the first column
+  colnames(data)[1] <- "D"
+  
+  ## Format date string for use
+  data$D <- gsub(" ","-",data$D)
+  data$ds <- substring(data$D,1,10)
+  
+  ## Conver to Date
+  data$ds <- as.POSIXct(data$D,format="%a-%b-%d", tz="America/New_York")
+  
+  data <- data.frame(Company=company, Date=data$ds)
+  
+  return(data)
+}
+
+## Construct a data frame of daily tweets
+count_data_frame <- function(num, companies) {
+  ## Create an Empty Data Frame
+  DF <- data.frame()
+  
+  for (i in 1:num) {
+    DF <- rbind(DF,new_data(companies[i]))
+  }
+  
+  return(DF)
+}
+
+## Normalize the data for a company
+normalize_data <- function(DF, company) {
+  ## Create normalized data frame
+  Subset <- DF[which(DF$Company==company),]
+  new <- data.frame(Company=company,Date=unique(DF$Date))
+  new$Count <- sapply(new$Date, function (t) length(which(Subset$Date==t)))
+  return(new)
+}
+
+## Normalize an entire data frame from counts per day
+normalize_data_frame <- function(DF, num, companies) {
+  
+  ## Normalized mention set
+  N <- data.frame()
+  
+  ## Create normalized data frame
+  for (i in 1:num) {
+    company <- companies[i]
+    N <- rbind(N,normalize_data(DF,company))
+  }
+  
+  # Remove NAs
+  N <- N[which(!is.na(N$Date)),]
+  # Normalize
+  max <- max(N$Count)
+  N$Count <- (N$Count/max)*100
+  
+  return(N)
+}
+
+## Generate the title for the top of the graph
+graph_title <- function(num, companies, normalized) {
+  num <- as.integer(num)
+  if (normalized) {
+    start <- title_pre_normalized
+  }
+  else {
+    start <- title_pre
+  }
+  if (num==1) {
+   title = paste(start,companies[1],title_post,sep="") 
+  }
+  else if (num==2) {
+    title = paste(start,companies[1],title_mid,companies[2],title_post, sep="")
+  }
+  else if (num>=3) {
+    title = paste(start)
+    for (i in 1:(num-1)) {
+     title = paste(title, companies[i],title_mid_pre,sep="") 
+    }
+    title = paste(title,title_mid, companies[num],title_post,sep="")
+  }
+}
+
+## Generate the graphic
+gen_graph <- function(DF, title) {
+
+  ## Set bin width equal to 1 day
+  bin = 60*60*24
+  
+  ## PLOT THE COMBINED HISTOGRAM GRAPH
+  plot <- ggplot(DF, aes(x=Date,fill=Company)) +
+    geom_histogram(binwidth=bin,position="dodge") + 
+    xlab("Date") + ggtitle(title) + ylab("Count")
+  
+  return(plot)
+}
+
+## Generate the normalized graphic
+gen_graph_normalized <- function(DF, Title) {
+  ## Set bin width equal to 1 day
+  bin = 60*60*24
+  
+  ## PLOT THE COMBINED HISTOGRAM GRAPH
+  plot <- qplot(Date, Count, geom="bar", data=DF, fill=Company, stat="identity", position="dodge") +
+    labs(title=Title) + xlab("Date") + ylab("Rank") 
+  
+  return( plot )  
+}
+
+## Create a graph
+graph_multiple <- function(num, companies) {
+  
+  ## Create an Empty Data Frame
+  DF <- count_data_frame(num,companies)
+
+  ## Generate title for the plot
+  title = graph_title(num, companies, FALSE)
+  
+  return( gen_graph( DF, title ) )
+}
+
+## Create a normalized graph
+graph_multiple_normalized <- function(num, companies) {
+  
+  DF <- count_data_frame(num,companies)
+  N <- normalize_data_frame(DF, num, companies)
+  
+  ## Generate title for the plot
+  title = graph_title(num, companies, TRUE)
+  
+  graph <- gen_graph_normalized( N, title ) 
+  return( graph )
+}
+
+## Title for the file to save
+file_title <- function(num, companies, normalized) {
+  title = ""
+  for (i in 0:num) {
+    title = paste(title,companies[i],sep="")
+  }
+  if (normalized) { title=paste(title,"normalized",sep="") } else { title=paste(title,"count",sep="") }
+  return(title)
+}
+
+
+#####################     GENERATE GRAPHS     ################################# 
+
+## Collect the command line arguments
+## 1st is the number of companies
+## 2nd is the working directory
+## Rest are company names
+args <- commandArgs(trailingOnly = TRUE)
+num <- args[1]
+dir <- args[2]
+setwd(dir)
+companies <- args[3]
+companies <- strsplit(companies, " ")[[1]]
+
+companies
+
+## Generate the graphics
+plot_1 <- graph_multiple(num,companies)
+title_1 = file_title(num,companies,FALSE)
+plot_2 <- graph_multiple_normalized(num,companies)
+title_2 = file_title(num,companies,TRUE)
+
+## Generate The Absolute Graphic
+pdf_title = paste(title_1,".pdf", sep="")
+pdf(file=pdf_title,width=11,height=8.5)
+plot_1
+dev.off()
+
+## Generate The Normalized Graphic
+pdf_title = paste(title_2,".pdf", sep="")
+pdf(file=pdf_title,width=11,height=8.5)
+plot_2
+dev.off()
