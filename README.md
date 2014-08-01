@@ -2,7 +2,7 @@
 
 ### Set Up
 1.	Get Twitter OAUTH tokens from the Twitter developer site
-1. 	Create a `twitter.yml` file and add the credentials
+1. 	Create a `twitter.yml` file and add your credentials like in the `twitter_example.yml` file
 3.	Make sure you have all the required ruby gems installed by running `bundle install`
 
 ### Data Output
