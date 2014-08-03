@@ -75,7 +75,18 @@ def main( token = '' )
     num = tweets.length
     
     # and increment
-    max_id = tweets[(num-1)]["id"]
+    begin 
+      max_id = tweets[(num-1)]["id"]
+    rescue
+      if tweets[(num-1)]["id"].nil?
+        z = 1
+        while tweets[(num-z)]["id"].nil? do
+          z += 1
+        end
+        max_id = tweets[(num-z)]["id"]
+      end
+    end
+        
 
   end while num > 1
 

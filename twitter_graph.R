@@ -99,9 +99,10 @@ graph_title <- function(num, companies, normalized) {
   }
   else if (num>=3) {
     title = paste(start)
-    for (i in 1:(num-1)) {
+    for (i in 1:(num-2)) {
      title = paste(title, companies[i],title_mid_pre,sep="") 
     }
+    title = paste(title, companies[num-1], "\", ", sep="")
     title = paste(title,title_mid, companies[num],title_post,sep="")
   }
 }

@@ -118,9 +118,10 @@ Type 'q()' to quit R.
 +   }
 +   else if (num>=3) {
 +     title = paste(start)
-+     for (i in 1:(num-1)) {
++     for (i in 1:(num-2)) {
 +      title = paste(title, companies[i],title_mid_pre,sep="") 
 +     }
++     title = paste(title, companies[num-1], "\", ", sep="")
 +     title = paste(title,title_mid, companies[num],title_post,sep="")
 +   }
 + }
@@ -201,27 +202,7 @@ Type 'q()' to quit R.
 > companies <- strsplit(companies, " ")[[1]]
 > 
 > companies
-[1] "@uber" "@lyft"
+[1] "@uber"    "@lyft"    "@sidecar" "@hailo"  
 > 
 > ## Generate the graphics
 > plot_1 <- graph_multiple(num,companies)
-> title_1 = file_title(num,companies,FALSE)
-> plot_2 <- graph_multiple_normalized(num,companies)
-> title_2 = file_title(num,companies,TRUE)
-> 
-> ## Generate The Absolute Graphic
-> pdf_title = paste(title_1,".pdf", sep="")
-> pdf(file=pdf_title,width=11,height=8.5)
-> plot_1
-> dev.off()
-null device 
-          1 
-> 
-> ## Generate The Normalized Graphic
-> pdf_title = paste(title_2,".pdf", sep="")
-> pdf(file=pdf_title,width=11,height=8.5)
-> plot_2
-> dev.off()
-null device 
-          1 
-> 
