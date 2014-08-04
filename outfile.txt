@@ -206,3 +206,23 @@ Type 'q()' to quit R.
 > 
 > ## Generate the graphics
 > plot_1 <- graph_multiple(num,companies)
+> title_1 = file_title(num,companies,FALSE)
+> plot_2 <- graph_multiple_normalized(num,companies)
+> title_2 = file_title(num,companies,TRUE)
+> 
+> ## Generate The Absolute Graphic
+> pdf_title = paste(title_1,".pdf", sep="")
+> pdf(file=pdf_title,width=11,height=8.5)
+> plot_1
+> dev.off()
+null device 
+          1 
+> 
+> ## Generate The Normalized Graphic
+> pdf_title = paste(title_2,".pdf", sep="")
+> pdf(file=pdf_title,width=11,height=8.5)
+> plot_2
+> dev.off()
+null device 
+          1 
+> 

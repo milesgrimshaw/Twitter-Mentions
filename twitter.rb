@@ -14,6 +14,7 @@ DATES = {
   Date.today-3 => 0,
   Date.today-4 => 0,
   Date.today-5 => 0,
+  Date.today-6 => 0,
   Date.today-7 => 0
 }
 
@@ -73,20 +74,11 @@ def main( token = '' )
     end
 
     num = tweets.length
-    
+     
     # and increment
-    begin 
+    if (num>1)
       max_id = tweets[(num-1)]["id"]
-    rescue
-      if tweets[(num-1)]["id"].nil?
-        z = 1
-        while tweets[(num-z)]["id"].nil? do
-          z += 1
-        end
-        max_id = tweets[(num-z)]["id"]
-      end
     end
-        
 
   end while num > 1
 
