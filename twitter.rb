@@ -49,6 +49,9 @@ def main( token = '' )
   # local loop var
   max_id = nil
 
+  # Retry Loop just to make sure not a failed call
+  retries = 0
+
   # loop over paginated twitter results
   begin
     pp 'mining page'
@@ -74,11 +77,57 @@ def main( token = '' )
     end
 
     num = tweets.length
-     
+    pp "The number of tweets is: #{num}"
+
+    # new_max_id = tweets[(num-1)]["id"]
+
+    # if (num <= 1) & (max_id != nil)
+    #   new_max_id = max_id
+    # else
+    #   new_max_id = tweets[(num-1)]["id"]
+    # end
+
+
+    # & (new_max_id < max_id)
+
     # and increment
-    if (num>1)
+    if (max_id == nil) & (retries < 3) & (num <= 1)
+      num = num + 1
+      retries = retries + 1
+    elsif (max_id == nil)
       max_id = tweets[(num-1)]["id"]
+    elsif (num>1) & (retries < 3)
+      max_id = tweets[(num-1)]["id"]
+    elsif (num==1) & (retries < 3)
+      max_id = tweets[(num-1)]["id"]
+      num = 2
+      retries = retries + 1
+    elsif (num==0) & (retries < 3)
+      max_id = max_id -1
+      retries = retries + 1
+      num = 2
+      pp "Number is #{num}"
     end
+
+    # elsif (new_max_id == max_id)
+    #   max_id = max_id -1
+    #   num = 2
+    # else  
+    #   num = -1
+
+    pp "Max ID is: #{max_id}"
+
+    # # check to see if should retry an extra time
+    # if (num==1) & (tried_twice == false)
+    #   num += 1
+    #   tried_twice = true
+    # elsif (num==0) & (tried_twice == false)
+    #   num = num+2
+    #   tried_twice = true
+    # elsif (tried_twice == true)
+    #   tried_twice = false
+    # end
+
 
   end while num > 1
 
@@ -141,12 +190,14 @@ def grabResults(address, auth)
   request.oauth! http, auth[:ckey], auth[:atok]
   response = http.request request
 
+  pp "Resonse code is: #{response.code}"
+
   ## Check to see if exceeded API limit
   while response.code == '429'
 
-  	p 'rate limited, waiting 5min'
+    pp 'rate limited, waiting 5min'
   	sleep 5*60
-  	response = http.request request
+  	response = grabResults(address, auth)
   end
 
   return response

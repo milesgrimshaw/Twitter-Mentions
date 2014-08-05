@@ -202,7 +202,7 @@ Type 'q()' to quit R.
 > companies <- strsplit(companies, " ")[[1]]
 > 
 > companies
-[1] "@uber"    "@lyft"    "@sidecar" "@hailo"  
+[1] "@nytimes"
 > 
 > ## Generate the graphics
 > plot_1 <- graph_multiple(num,companies)
@@ -222,7 +222,3 @@ null device
 > pdf_title = paste(title_2,".pdf", sep="")
 > pdf(file=pdf_title,width=11,height=8.5)
 > plot_2
-> dev.off()
-null device 
-          1 
-> 
