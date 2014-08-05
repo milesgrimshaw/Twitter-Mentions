@@ -19,5 +19,5 @@ I built this basic set of files to be able to quickly generate a graphic compari
 
 ## Limitations
 
-Twitter only gives you API access to the last 7 days of tweets. The next step is to make this run daily with a given set of terms.
-There are some quirks to the API e.g., when it won't give me access to the full 7 days if a term has had a lot of mentions in the past few. 
++ Twitter only gives you API access to the last 7 days of tweets. The next step is to make this run daily with a given set of terms.
++ The API or my script is not perfect and often fails to find results. If it is my script and someone fixes it, I would love to know!

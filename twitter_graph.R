@@ -103,7 +103,7 @@ graph_title <- function(num, companies, normalized) {
      title = paste(title, companies[i],title_mid_pre,sep="") 
     }
     title = paste(title, companies[num-1], "\", ", sep="")
-    title = paste(title,title_mid, companies[num],title_post,sep="")
+    title = paste(title," and \"", companies[num],title_post,sep="")
   }
 }
 

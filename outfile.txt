@@ -122,7 +122,7 @@ Type 'q()' to quit R.
 +      title = paste(title, companies[i],title_mid_pre,sep="") 
 +     }
 +     title = paste(title, companies[num-1], "\", ", sep="")
-+     title = paste(title,title_mid, companies[num],title_post,sep="")
++     title = paste(title," and \"", companies[num],title_post,sep="")
 +   }
 + }
 > 
@@ -202,7 +202,7 @@ Type 'q()' to quit R.
 > companies <- strsplit(companies, " ")[[1]]
 > 
 > companies
-[1] "@nytimes"
+[1] "@uber"    "@lyft"    "@sidecar" "@hailo"  
 > 
 > ## Generate the graphics
 > plot_1 <- graph_multiple(num,companies)
@@ -222,3 +222,7 @@ null device
 > pdf_title = paste(title_2,".pdf", sep="")
 > pdf(file=pdf_title,width=11,height=8.5)
 > plot_2
+> dev.off()
+null device 
+          1 
+> 
